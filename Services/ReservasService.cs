@@ -26,9 +26,9 @@ namespace API_de_Reservas.Services
                 return Result<ReservaDto>.Failure($"Su usuario con id = {reservaCrearDto.UsuarioId} no existe");
             }
 
-            var fechaActual = DateTime.UtcNow.Date;
-            var fechaInicioReservaCrearDto = reservaCrearDto.FechaInicio.Date;
-            var fechaFinalReservaCrearDto = reservaCrearDto.FechaFinal.Date;
+            var fechaActual = DateTime.UtcNow;
+            var fechaInicioReservaCrearDto = reservaCrearDto.FechaInicio;
+            var fechaFinalReservaCrearDto = reservaCrearDto.FechaFinal;
 
             if (fechaInicioReservaCrearDto < fechaActual )
             {
@@ -40,7 +40,7 @@ namespace API_de_Reservas.Services
                 return Result<ReservaDto>.Failure("No se pudo crear la reserva porque la fecha final es pasada a la fecha actual");
             }
 
-            if (reservaCrearDto.FechaFinal < reservaCrearDto.FechaInicio)
+            if (fechaFinalReservaCrearDto < fechaInicioReservaCrearDto)
             {
                 return Result<ReservaDto>.Failure("No se pudo crear la reserva porque la fecha final es anterior a la fecha de inicio");
             }
