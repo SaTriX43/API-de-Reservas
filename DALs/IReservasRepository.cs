@@ -8,5 +8,6 @@ namespace API_de_Reservas.DALs
         public Task<Reserva?> ObtenerReservaPorId(int reservaId);
         public Task<Reserva> CancelarReserva(int reservaId);
         public Task<List<Reserva>> ObtenerReservasPorUsuario(int usuarioId);
+        public Task<List<Reserva>> ObtenerReservasPorRecurso(int recursoId);
     }
 }

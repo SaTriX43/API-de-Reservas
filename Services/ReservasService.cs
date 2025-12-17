@@ -164,5 +164,29 @@ namespace API_de_Reservas.Services
 
             return Result<List<ReservaDto>>.Success(reservasDto);
         }
+        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorRecurso(int recursoId)
+        {
+            var recursoExiste = await _recursoRepository.ObtenerRecursoPorId(recursoId);
+
+            if(recursoExiste == null)
+            {
+                return Result<List<ReservaDto>>.Failure("Su recurso con id no existe");
+            }
+
+            var reservasPorRecurso = await _reservaRepository.ObtenerReservasPorRecurso(recursoId);
+
+            var reservasDto = reservasPorRecurso.Select(r => new ReservaDto { 
+                RecursoId=r.Id,
+                Estado  =r.Estado,
+                FechaCreacion=r.FechaCreacion,
+                FechaFinal = r.FechaFinal,  
+                FechaInicio=r.FechaInicio,
+                Id =r.Id,
+                UsuarioId = r.UsuarioId
+            }).ToList();
+
+            return Result<List<ReservaDto>>.Success(reservasDto);
+        }
+
     }
 }
