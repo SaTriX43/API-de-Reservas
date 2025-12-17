@@ -45,5 +45,34 @@ namespace API_de_Reservas.Controllers
                 valor = reservaCreada.Value
             });
         }
+
+        [HttpPut("cancelar-reserva/{reservaId}")]
+        public async Task<IActionResult> CancelarReserva(int reservaId)
+        {
+            if(reservaId <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "Su reservaId no puede ser menor o igual a 0"
+                });
+            }
+
+            var reservaCancelada = await _reservaService.CancelarReserva(reservaId);
+
+            if (reservaCancelada.IsFailure) {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = reservaCancelada.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                valor = reservaCancelada.Value
+            });
+        }
     }
 }

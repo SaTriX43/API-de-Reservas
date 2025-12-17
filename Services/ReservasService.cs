@@ -91,5 +91,35 @@ namespace API_de_Reservas.Services
 
             return Result<ReservaDto>.Success(reservaCreadaDto);
         }
+
+        public async Task<Result<ReservaDto>> CancelarReserva(int reservaId)
+        {
+            var reservaExiste = await _reservaRepository.ObtenerReservaPorId(reservaId);
+
+            if(reservaExiste == null)
+            {
+                return Result<ReservaDto>.Failure($"Su reserva con id = {reservaId} no existe");
+            }
+
+            if(reservaExiste.Estado == EstadoReserva.Cancelada)
+            {
+                return Result<ReservaDto>.Failure($"Su reserva con id = {reservaId} ya esta cancelada");
+            }
+
+            var reservaCancelada = await _reservaRepository.CancelarReserva(reservaId);
+
+            var reservaCanceladaDto = new ReservaDto
+            {
+                Id = reservaCancelada.Id,
+                Estado = reservaCancelada.Estado,
+                FechaCreacion = reservaCancelada.FechaCreacion,
+                FechaFinal = reservaCancelada.FechaFinal,
+                FechaInicio = reservaCancelada.FechaInicio,
+                RecursoId = reservaCancelada.RecursoId,
+                UsuarioId = reservaCancelada.UsuarioId,
+            };
+
+            return Result<ReservaDto>.Success(reservaCanceladaDto);
+        }
     }
 }

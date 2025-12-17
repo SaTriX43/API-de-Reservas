@@ -4,7 +4,8 @@ namespace API_de_Reservas.DALs
 {
     public interface IReservasRepository
     {
-        public Task<List<Reserva>> ObtenerReservasPorTipo(string tipoReserva);
         public Task<Reserva> CrearReserva(Reserva reserva);
+        public Task<Reserva?> ObtenerReservaPorId(int reservaId);
+        public Task<Reserva> CancelarReserva(int reservaId);
     }
 }

@@ -12,20 +12,28 @@ namespace API_de_Reservas.DALs
             _context = context;
         }
 
-        public async Task<List<Reserva>> ObtenerReservasPorTipo(string tipoRecurso)
-        {
-            var reservas = await _context.Reservas
-                .Include(r => r.Recurso)
-                .Where(r => r.Recurso.Tipo.ToString() == tipoRecurso).ToListAsync();
-
-            return reservas;
-                
-        }
         public async Task<Reserva> CrearReserva(Reserva reserva)
         {
             _context.Reservas.Add(reserva);
             await _context.SaveChangesAsync();
             return reserva;
+        }
+
+        public async Task<Reserva?> ObtenerReservaPorId(int reservaId)
+        {
+            var reservaEncontrada = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == reservaId);
+            return reservaEncontrada;
+        }
+
+        public async Task<Reserva> CancelarReserva(int reservaId)
+        {
+            var reservaEncontrada = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == reservaId);
+
+            reservaEncontrada.Estado = EstadoReserva.Cancelada;
+
+            await _context.SaveChangesAsync();
+
+            return reservaEncontrada;
         }
     }
 }

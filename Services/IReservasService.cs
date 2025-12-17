@@ -7,5 +7,6 @@ namespace API_de_Reservas.Services
     {
 
         public Task<Result<ReservaDto>> CrearReserva(ReservaCrearDto reservaCrearDto);
+        public Task<Result<ReservaDto>> CancelarReserva(int  reservaId);
     }
 }
