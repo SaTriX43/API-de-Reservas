@@ -29,13 +29,15 @@ namespace API_de_Reservas.Services
             var fechaActual = DateTime.UtcNow;
             var fechaInicioReservaCrearDto = reservaCrearDto.FechaInicio;
             var fechaFinalReservaCrearDto = reservaCrearDto.FechaFinal;
+            var tolerancia = TimeSpan.FromMinutes(1);
+            var fechaMinimaPermitida = fechaActual.Subtract(tolerancia);
 
-            if (fechaInicioReservaCrearDto < fechaActual )
+            if (fechaInicioReservaCrearDto < fechaMinimaPermitida)
             {
                 return Result<ReservaDto>.Failure("No se pudo crear la reserva por que la fecha de inicio es pasada a la fecha actual");
             }
 
-            if (fechaFinalReservaCrearDto < fechaActual)
+            if (fechaFinalReservaCrearDto < fechaMinimaPermitida)
             {
                 return Result<ReservaDto>.Failure("No se pudo crear la reserva porque la fecha final es pasada a la fecha actual");
             }
