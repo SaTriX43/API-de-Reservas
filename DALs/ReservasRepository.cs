@@ -35,5 +35,10 @@ namespace API_de_Reservas.DALs
 
             return reservaEncontrada;
         }
+
+        public async Task<List<Reserva>> ObtenerReservasPorUsuario(int usuarioId) {
+            var reservarPorUsuario = await _context.Reservas.Where(r => r.UsuarioId == usuarioId).ToListAsync();
+            return reservarPorUsuario;
+        }
     }
 }

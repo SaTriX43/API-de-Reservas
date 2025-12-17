@@ -134,5 +134,35 @@ namespace API_de_Reservas.Services
 
             return Result<ReservaDto>.Success(reservaCanceladaDto);
         }
+
+        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuario(int reservaUsuarioId, int usuarioId, string rol)
+        {
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorId(reservaUsuarioId);
+
+            if(usuarioExiste == null)
+            {
+                return Result<List<ReservaDto>>.Failure($"Su usuario con id = {usuarioId} no existe");
+            }
+
+            if(usuarioExiste.Id != usuarioId && rol != UsuarioRol.Admin.ToString())
+            {
+                return Result<List<ReservaDto>>.Failure("No puede ver reservas que no son suyas");
+            }
+
+            var reservas = await _reservaRepository.ObtenerReservasPorUsuario(reservaUsuarioId);
+
+            var reservasDto = reservas.Select(r => new ReservaDto
+            {
+                Id = r.Id,
+                UsuarioId= r.UsuarioId,
+                Estado = r.Estado,
+                FechaCreacion = r.FechaCreacion,
+                FechaFinal = r.FechaFinal,
+                FechaInicio = r.FechaInicio,
+                RecursoId = r.RecursoId 
+            }).ToList();
+
+            return Result<List<ReservaDto>>.Success(reservasDto);
+        }
     }
 }

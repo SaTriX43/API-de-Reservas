@@ -91,8 +91,8 @@ namespace API_de_Reservas.Controllers
         }
 
         [Authorize]
-        [HttpGet("obtener-reservas-usuario")]
-        public async Task<IActionResult> ObtenerReservasPorUsuario()
+        [HttpGet("obtener-reservas-usuario/{reservaUsuarioId}")]
+        public async Task<IActionResult> ObtenerReservasPorUsuario(int reservaUsuarioId)
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -107,7 +107,22 @@ namespace API_de_Reservas.Controllers
 
             var rol = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuario(usuarioId, rol);
+            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuario(reservaUsuarioId,usuarioId, rol);
+
+            if(reservasPorUsuario.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = reservasPorUsuario.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                valor = reservasPorUsuario.Value
+            });
         }
     }
 }
