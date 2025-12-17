@@ -1,5 +1,6 @@
 ﻿using API_de_Reservas.DTOs.ReservaDtoCarpeta;
 using API_de_Reservas.Models;
+using API_de_Reservas.Models.Enums;
 
 namespace API_de_Reservas.Services
 {
@@ -7,6 +8,6 @@ namespace API_de_Reservas.Services
     {
 
         public Task<Result<ReservaDto>> CrearReserva(ReservaCrearDto reservaCrearDto);
-        public Task<Result<ReservaDto>> CancelarReserva(int  reservaId);
+        public Task<Result<ReservaDto>> CancelarReserva(int reservaId, int usuarioId, string rol);
     }
 }

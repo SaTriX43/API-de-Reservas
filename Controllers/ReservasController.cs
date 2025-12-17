@@ -1,7 +1,9 @@
 ﻿using API_de_Reservas.DTOs.ReservaDtoCarpeta;
 using API_de_Reservas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API_de_Reservas.Controllers
 {
@@ -46,9 +48,22 @@ namespace API_de_Reservas.Controllers
             });
         }
 
+        [Authorize]
         [HttpPut("cancelar-reserva/{reservaId}")]
         public async Task<IActionResult> CancelarReserva(int reservaId)
         {
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(!int.TryParse(usuarioIdClaim, out int usuarioId)) {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "Su userId debe de ser un numero"
+                });
+            }
+
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+
             if(reservaId <= 0)
             {
                 return BadRequest(new
@@ -58,7 +73,7 @@ namespace API_de_Reservas.Controllers
                 });
             }
 
-            var reservaCancelada = await _reservaService.CancelarReserva(reservaId);
+            var reservaCancelada = await _reservaService.CancelarReserva(reservaId,usuarioId,rol);
 
             if (reservaCancelada.IsFailure) {
                 return BadRequest(new
@@ -73,6 +88,26 @@ namespace API_de_Reservas.Controllers
                 success = true,
                 valor = reservaCancelada.Value
             });
+        }
+
+        [Authorize]
+        [HttpGet("obtener-reservas-usuario")]
+        public async Task<IActionResult> ObtenerReservasPorUsuario()
+        {
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(!int.TryParse(usuarioIdClaim, out int usuarioId))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "Su usuario Id debe de ser un numero"
+                });
+            }
+
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuario(usuarioId, rol);
         }
     }
 }

@@ -92,14 +92,27 @@ namespace API_de_Reservas.Services
             return Result<ReservaDto>.Success(reservaCreadaDto);
         }
 
-        public async Task<Result<ReservaDto>> CancelarReserva(int reservaId)
+        public async Task<Result<ReservaDto>> CancelarReserva(int reservaId, int usuarioId, string rol)
         {
+            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorId(usuarioId);
+
+            if(usuarioExiste == null)
+            {
+                return Result<ReservaDto>.Failure($"Usuario con id = {usuarioId} no existe");
+            }
+
             var reservaExiste = await _reservaRepository.ObtenerReservaPorId(reservaId);
 
             if(reservaExiste == null)
             {
                 return Result<ReservaDto>.Failure($"Su reserva con id = {reservaId} no existe");
             }
+
+            if(reservaExiste.UsuarioId != usuarioId && rol != UsuarioRol.Admin.ToString())
+            {
+                return Result<ReservaDto>.Failure("No puedes cancelar una reserva que no es tuya");
+            }
+
 
             if(reservaExiste.Estado == EstadoReserva.Cancelada)
             {
