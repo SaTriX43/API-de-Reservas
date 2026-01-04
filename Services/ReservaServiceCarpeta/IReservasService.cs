@@ -7,7 +7,7 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
     public interface IReservasService
     {
 
-        public Task<Result<ReservaDto>> CrearReserva(ReservaCrearDto reservaCrearDto);
+        public Task<Result<ReservaDto>> CrearReservaAsync(ReservaCrearDto reservaCrearDto,int usuarioId);
         public Task<Result<ReservaDto>> CancelarReserva(int reservaId, int usuarioId, string rol);
         public Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuario(int reservaUsuarioId, int usuarioId, string rol);
         public Task<Result<List<ReservaDto>>> ObtenerReservasPorRecurso(int recursoId);

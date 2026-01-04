@@ -12,36 +12,24 @@ namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
             _context = context;
         }
 
-        public async Task<Reserva> CrearReserva(Reserva reserva)
+        public Reserva CrearReserva(Reserva reserva)
         {
             _context.Reservas.Add(reserva);
-            await _context.SaveChangesAsync();
             return reserva;
         }
 
-        public async Task<Reserva?> ObtenerReservaPorId(int reservaId)
+        public async Task<Reserva?> ObtenerReservaPorIdAsync(int reservaId)
         {
             var reservaEncontrada = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == reservaId);
             return reservaEncontrada;
         }
 
-        public async Task<Reserva> CancelarReserva(int reservaId)
-        {
-            var reservaEncontrada = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == reservaId);
-
-            reservaEncontrada.Estado = EstadoReserva.Cancelada;
-
-            await _context.SaveChangesAsync();
-
-            return reservaEncontrada;
-        }
-
-        public async Task<List<Reserva>> ObtenerReservasPorUsuario(int usuarioId) {
+        public async Task<List<Reserva>> ObtenerReservasPorUsuarioAsync(int usuarioId) {
             var reservarPorUsuario = await _context.Reservas.Where(r => r.UsuarioId == usuarioId).ToListAsync();
             return reservarPorUsuario;
         }
 
-        public async Task<List<Reserva>> ObtenerReservasPorRecurso(int recursoId)
+        public async Task<List<Reserva>> ObtenerReservasPorRecursoAsync(int recursoId)
         {
             var reservasPorRecurso = await _context.Reservas.Where(r => r.RecursoId == recursoId).ToListAsync();
             return reservasPorRecurso;

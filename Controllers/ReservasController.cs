@@ -19,6 +19,7 @@ namespace API_de_Reservas.Controllers
             _reservaService = reservaService;
         }
 
+        [Authorize]
         [HttpPost("crear-reserva")]
         public async Task<IActionResult> CrearReserva([FromBody] ReservaCrearDto reservaCrearDto)
         {
@@ -31,7 +32,17 @@ namespace API_de_Reservas.Controllers
                 });
             }
 
-            var reservaCreada = await _reservaService.CrearReserva(reservaCrearDto);
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(!int.TryParse(usuarioIdClaim, out int usuarioId)) {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = "Su usuarioId debe de ser un numero"
+                });
+            }
+
+            var reservaCreada = await _reservaService.CrearReservaAsync(reservaCrearDto,usuarioId);
 
             if(reservaCreada.IsFailure)
             {

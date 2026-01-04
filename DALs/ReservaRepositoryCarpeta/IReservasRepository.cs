@@ -4,10 +4,9 @@ namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
 {
     public interface IReservasRepository
     {
-        public Task<Reserva> CrearReserva(Reserva reserva);
-        public Task<Reserva?> ObtenerReservaPorId(int reservaId);
-        public Task<Reserva> CancelarReserva(int reservaId);
-        public Task<List<Reserva>> ObtenerReservasPorUsuario(int usuarioId);
-        public Task<List<Reserva>> ObtenerReservasPorRecurso(int recursoId);
+        public Reserva CrearReserva(Reserva reserva);
+        public Task<Reserva?> ObtenerReservaPorIdAsync(int reservaId);
+        public Task<List<Reserva>> ObtenerReservasPorUsuarioAsync(int usuarioId);
+        public Task<List<Reserva>> ObtenerReservasPorRecursoAsync(int recursoId);
     }
 }

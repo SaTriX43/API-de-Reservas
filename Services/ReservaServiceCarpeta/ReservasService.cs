@@ -1,4 +1,5 @@
-﻿using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
+﻿using API_de_Reservas.DALs;
+using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
 using API_de_Reservas.DALs.ReservaRepositoryCarpeta;
 using API_de_Reservas.DALs.UsuarioRepositoryCarpeta;
 using API_de_Reservas.DTOs.ReservaDtoCarpeta;
@@ -10,24 +11,20 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 {
     public class ReservasService : IReservasService
     {
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
         private readonly IReservasRepository _reservaRepository;
         private readonly IRecursoRepository _recursoRepository;
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public ReservasService(IReservasRepository reservaRepository, IRecursoRepository recursoRepository, IUsuarioRepository usuarioRepository) { 
+        public ReservasService(IReservasRepository reservaRepository, IRecursoRepository recursoRepository, IUsuarioRepository usuarioRepository,IUnidadDeTrabajo unidadDeTrabajo) { 
+            _unidadDeTrabajo = unidadDeTrabajo;
             _reservaRepository = reservaRepository;
             _recursoRepository = recursoRepository;
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<Result<ReservaDto>> CrearReserva(ReservaCrearDto reservaCrearDto)
+        public async Task<Result<ReservaDto>> CrearReservaAsync(ReservaCrearDto reservaCrearDto, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorId(reservaCrearDto.UsuarioId);
-
-            if (usuarioExiste == null) {
-                return Result<ReservaDto>.Failure($"Su usuario con id = {reservaCrearDto.UsuarioId} no existe");
-            }
-
             var fechaActual = DateTime.UtcNow;
             var fechaInicioReservaCrearDto = reservaCrearDto.FechaInicio;
             var fechaFinalReservaCrearDto = reservaCrearDto.FechaFinal;
@@ -49,7 +46,7 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
                 return Result<ReservaDto>.Failure("No se pudo crear la reserva porque la fecha final es anterior a la fecha de inicio");
             }
 
-            var recurso = await _recursoRepository.ObtenerRecursoPorId(reservaCrearDto.RecursoId);
+            var recurso = await _recursoRepository.ObtenerRecursoPorIdAsync(reservaCrearDto.RecursoId);
             if(recurso == null)
             {
                 return Result<ReservaDto>.Failure($"El recurso con id = {reservaCrearDto.RecursoId} no existe");
@@ -70,7 +67,7 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 
             var reservaModel = new Reserva
             {
-                UsuarioId = reservaCrearDto.UsuarioId,
+                UsuarioId = usuarioId,
                 RecursoId = reservaCrearDto.RecursoId,
                 Estado = EstadoReserva.Activo,
                 FechaCreacion = DateTime.UtcNow,
@@ -78,7 +75,9 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
                 FechaFinal = reservaCrearDto.FechaFinal
             };
 
-            var reservaCreada = await _reservaRepository.CrearReserva(reservaModel);
+            var reservaCreada = _reservaRepository.CrearReserva(reservaModel);
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             var reservaCreadaDto = new ReservaDto
             {
