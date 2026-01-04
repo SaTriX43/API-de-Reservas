@@ -93,7 +93,6 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 
             return Result<ReservaDto>.Success(reservaCreadaDto);
         }
-
         public async Task<Result> CancelarReservaAsync(int reservaId, int usuarioId)
         {
             if(reservaId <= 0)
@@ -125,7 +124,6 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 
             return Result.Success();
         }
-
         public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuarioIdAsync(int usuarioId)
         {
             var reservas = await _reservaRepository.ObtenerReservasPorUsuarioAsync(usuarioId);
@@ -139,29 +137,6 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
                 FechaFinal = r.FechaFinal,
                 FechaInicio = r.FechaInicio,
                 RecursoId = r.RecursoId 
-            }).ToList();
-
-            return Result<List<ReservaDto>>.Success(reservasDto);
-        }
-        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorRecurso(int recursoId)
-        {
-            var recursoExiste = await _recursoRepository.ObtenerRecursoPorId(recursoId);
-
-            if(recursoExiste == null)
-            {
-                return Result<List<ReservaDto>>.Failure("Su recurso con id no existe");
-            }
-
-            var reservasPorRecurso = await _reservaRepository.ObtenerReservasPorRecurso(recursoId);
-
-            var reservasDto = reservasPorRecurso.Select(r => new ReservaDto { 
-                RecursoId=r.Id,
-                Estado  =r.Estado,
-                FechaCreacion=r.FechaCreacion,
-                FechaFinal = r.FechaFinal,  
-                FechaInicio=r.FechaInicio,
-                Id =r.Id,
-                UsuarioId = r.UsuarioId
             }).ToList();
 
             return Result<List<ReservaDto>>.Success(reservasDto);
@@ -196,8 +171,6 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 
             return Result.Success();
         }
-
-
         public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuarioIdAdminAsync(int usuarioId)
         {
             if(usuarioId <= 0)
@@ -223,6 +196,34 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
                 FechaFinal = r.FechaFinal,
                 FechaInicio = r.FechaInicio,
                 RecursoId = r.RecursoId
+            }).ToList();
+
+            return Result<List<ReservaDto>>.Success(reservasDto);
+        }
+        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorRecursoAdminAsync(int recursoId)
+        {
+            if(recursoId <= 0)
+            {
+                return Result<List<ReservaDto>>.Failure("Su recursoId no puede ser menor o igual a 0");
+            }
+
+            var recursoExiste = await _recursoRepository.ObtenerRecursoPorIdAsync(recursoId);
+
+            if(recursoExiste == null)
+            {
+                return Result<List<ReservaDto>>.Failure($"Su recurso con id = {recursoId} no existe");
+            }
+
+            var reservasPorRecurso = await _reservaRepository.ObtenerReservasPorRecursoAsync(recursoId);
+
+            var reservasDto = reservasPorRecurso.Select(r => new ReservaDto { 
+                RecursoId=r.Id,
+                Estado  =r.Estado,
+                FechaCreacion=r.FechaCreacion,
+                FechaFinal = r.FechaFinal,  
+                FechaInicio=r.FechaInicio,
+                Id =r.Id,
+                UsuarioId = r.UsuarioId
             }).ToList();
 
             return Result<List<ReservaDto>>.Success(reservasDto);

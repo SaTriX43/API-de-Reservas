@@ -56,5 +56,27 @@ namespace API_de_Reservas.Controllers
                 valor = reservasPorUsuario.Value
             });
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("obtener-reservas-recurso/{recursoId}")]
+        public async Task<IActionResult> ObtenerReservasPorRecurso(int recursoId)
+        {
+            var reservasPorRecurso = await _reservaService.ObtenerReservasPorRecursoAdminAsync(recursoId);
+
+            if (reservasPorRecurso.IsFailure)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    error = reservasPorRecurso.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                valor = reservasPorRecurso.Value
+            });
+        }
     }
 }

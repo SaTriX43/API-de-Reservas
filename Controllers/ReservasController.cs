@@ -120,34 +120,6 @@ namespace API_de_Reservas.Controllers
             });
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("obtener-reservas-recurso/{recursoId}")]
-        public async Task<IActionResult> ObtenerReservasPorRecurso(int recursoId)
-        {
-            if(recursoId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "Su recursoId no puede ser menor o igual a 0"
-                });
-            }
-
-            var reservasPorRecurso = await _reservaService.ObtenerReservasPorRecurso(recursoId);
-
-            if (reservasPorRecurso.IsFailure) {
-                return NotFound(new
-                {
-                    success = false,
-                    error = reservasPorRecurso.Error
-                });
-            }
-
-            return Ok(new
-            {
-                success = true,
-                valor = reservasPorRecurso.Value
-            });
-        }
+       
     }
 }
