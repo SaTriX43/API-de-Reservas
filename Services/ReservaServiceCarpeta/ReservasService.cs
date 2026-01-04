@@ -23,6 +23,7 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
             _usuarioRepository = usuarioRepository;
         }
 
+        //Usuarios
         public async Task<Result<ReservaDto>> CrearReservaAsync(ReservaCrearDto reservaCrearDto, int usuarioId)
         {
             var fechaActual = DateTime.UtcNow;
@@ -93,64 +94,41 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
             return Result<ReservaDto>.Success(reservaCreadaDto);
         }
 
-        public async Task<Result<ReservaDto>> CancelarReserva(int reservaId, int usuarioId, string rol)
+        public async Task<Result> CancelarReservaAsync(int reservaId, int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorId(usuarioId);
-
-            if(usuarioExiste == null)
+            if(reservaId <= 0)
             {
-                return Result<ReservaDto>.Failure($"Usuario con id = {usuarioId} no existe");
+                return Result.Failure("Su reservaId no puede ser menor o igual a 0");
             }
 
-            var reservaExiste = await _reservaRepository.ObtenerReservaPorId(reservaId);
+            var reservaExiste = await _reservaRepository.ObtenerReservaPorIdAsync(reservaId);
 
             if(reservaExiste == null)
             {
-                return Result<ReservaDto>.Failure($"Su reserva con id = {reservaId} no existe");
+                return Result.Failure($"Su reserva con id = {reservaId} no existe");
             }
 
-            if(reservaExiste.UsuarioId != usuarioId && rol != UsuarioRol.Admin.ToString())
+            if(reservaExiste.UsuarioId != usuarioId)
             {
-                return Result<ReservaDto>.Failure("No puedes cancelar una reserva que no es tuya");
+                return Result.Failure("No puedes cancelar una reserva que no es tuya");
             }
 
 
             if(reservaExiste.Estado == EstadoReserva.Cancelada)
             {
-                return Result<ReservaDto>.Failure($"Su reserva con id = {reservaId} ya esta cancelada");
+                return Result.Failure($"Su reserva con id = {reservaId} ya esta cancelada");
             }
 
-            var reservaCancelada = await _reservaRepository.CancelarReserva(reservaId);
+            reservaExiste.Estado = EstadoReserva.Cancelada;
 
-            var reservaCanceladaDto = new ReservaDto
-            {
-                Id = reservaCancelada.Id,
-                Estado = reservaCancelada.Estado,
-                FechaCreacion = reservaCancelada.FechaCreacion,
-                FechaFinal = reservaCancelada.FechaFinal,
-                FechaInicio = reservaCancelada.FechaInicio,
-                RecursoId = reservaCancelada.RecursoId,
-                UsuarioId = reservaCancelada.UsuarioId,
-            };
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
-            return Result<ReservaDto>.Success(reservaCanceladaDto);
+            return Result.Success();
         }
 
-        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuario(int reservaUsuarioId, int usuarioId, string rol)
+        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuarioIdAsync(int usuarioId)
         {
-            var usuarioExiste = await _usuarioRepository.ObtenerUsuarioPorId(reservaUsuarioId);
-
-            if(usuarioExiste == null)
-            {
-                return Result<List<ReservaDto>>.Failure($"Su usuario con id = {usuarioId} no existe");
-            }
-
-            if(usuarioExiste.Id != usuarioId && rol != UsuarioRol.Admin.ToString())
-            {
-                return Result<List<ReservaDto>>.Failure("No puede ver reservas que no son suyas");
-            }
-
-            var reservas = await _reservaRepository.ObtenerReservasPorUsuario(reservaUsuarioId);
+            var reservas = await _reservaRepository.ObtenerReservasPorUsuarioAsync(usuarioId);
 
             var reservasDto = reservas.Select(r => new ReservaDto
             {
@@ -189,5 +167,65 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
             return Result<List<ReservaDto>>.Success(reservasDto);
         }
 
+
+
+        //admin
+        public async Task<Result> CancelarReservaAdminAsync(int reservaId)
+        {
+            if (reservaId <= 0)
+            {
+                return Result.Failure("Su reservaId no puede ser menor o igual a 0");
+            }
+
+            var reservaExiste = await _reservaRepository.ObtenerReservaPorIdAsync(reservaId);
+
+            if (reservaExiste == null)
+            {
+                return Result.Failure($"Su reserva con id = {reservaId} no existe");
+            }
+
+            if (reservaExiste.Estado == EstadoReserva.Cancelada)
+            {
+                return Result.Failure($"Su reserva con id = {reservaId} ya esta cancelada");
+            }
+
+            reservaExiste.Estado = EstadoReserva.Cancelada;
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
+
+
+            return Result.Success();
+        }
+
+
+        public async Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuarioIdAdminAsync(int usuarioId)
+        {
+            if(usuarioId <= 0)
+            {
+                return Result<List<ReservaDto>>.Failure($"Su usuarioId no puede ser menor o igual a 0");
+            }
+
+            var usuario = await _usuarioRepository.ObtenerUsuarioPorId(usuarioId);
+
+            if(usuario == null)
+            {
+                return Result<List<ReservaDto>>.Failure($"Su usuario con id = {usuarioId} no existe");
+            }
+
+            var reservas = await _reservaRepository.ObtenerReservasPorUsuarioAsync(usuarioId);
+
+            var reservasDto = reservas.Select(r => new ReservaDto
+            {
+                Id = r.Id,
+                UsuarioId = r.UsuarioId,
+                Estado = r.Estado,
+                FechaCreacion = r.FechaCreacion,
+                FechaFinal = r.FechaFinal,
+                FechaInicio = r.FechaInicio,
+                RecursoId = r.RecursoId
+            }).ToList();
+
+            return Result<List<ReservaDto>>.Success(reservasDto);
+        }
     }
 }

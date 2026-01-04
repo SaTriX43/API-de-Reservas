@@ -1,0 +1,60 @@
+﻿using API_de_Reservas.Services.ReservaServiceCarpeta;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace API_de_Reservas.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AdminReservasController : ControllerBase
+    {
+        private readonly IReservasService _reservaService;
+
+        public AdminReservasController(IReservasService reservaService)
+        {
+            _reservaService = reservaService;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("cancelar-reserva/{reservaId}")]
+        public async Task<IActionResult> CancelarReserva(int reservaId)
+        {
+            var reservaCancelada = await _reservaService.CancelarReservaAdminAsync(reservaId);
+
+            if (reservaCancelada.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = reservaCancelada.Error
+                });
+            }
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("usuario/{usuarioId}")]
+        public async Task<IActionResult> ObtenerReservasPorUsuario(int usuarioId)
+        {
+            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuarioIdAdminAsync(usuarioId);
+
+            if (reservasPorUsuario.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = reservasPorUsuario.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                valor = reservasPorUsuario.Value
+            });
+        }
+    }
+}

@@ -61,7 +61,7 @@ namespace API_de_Reservas.Controllers
         }
 
         [Authorize]
-        [HttpPut("cancelar-reserva/{reservaId}")]
+        [HttpPatch("cancelar-reserva/{reservaId}")]
         public async Task<IActionResult> CancelarReserva(int reservaId)
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -74,18 +74,7 @@ namespace API_de_Reservas.Controllers
                 });
             }
 
-            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if(reservaId <= 0)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    error = "Su reservaId no puede ser menor o igual a 0"
-                });
-            }
-
-            var reservaCancelada = await _reservaService.CancelarReserva(reservaId,usuarioId,rol);
+            var reservaCancelada = await _reservaService.CancelarReservaUsuarioAsync(reservaId,usuarioId);
 
             if (reservaCancelada.IsFailure) {
                 return BadRequest(new
@@ -95,16 +84,12 @@ namespace API_de_Reservas.Controllers
                 });
             }
 
-            return Ok(new
-            {
-                success = true,
-                valor = reservaCancelada.Value
-            });
+            return NoContent();
         }
 
         [Authorize]
-        [HttpGet("obtener-reservas-usuario/{reservaUsuarioId}")]
-        public async Task<IActionResult> ObtenerReservasPorUsuario(int reservaUsuarioId)
+        [HttpGet("usuario")]
+        public async Task<IActionResult> ObtenerReservasPorUsuario()
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -117,9 +102,7 @@ namespace API_de_Reservas.Controllers
                 });
             }
 
-            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuario(reservaUsuarioId,usuarioId, rol);
+            var reservasPorUsuario = await _reservaService.ObtenerReservasPorUsuarioIdAsync(usuarioId);
 
             if(reservasPorUsuario.IsFailure)
             {
