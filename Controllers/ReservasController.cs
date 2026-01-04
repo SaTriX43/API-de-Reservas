@@ -1,6 +1,6 @@
 ﻿using API_de_Reservas.DTOs.ReservaDtoCarpeta;
 using API_de_Reservas.Models.Enums;
-using API_de_Reservas.Services;
+using API_de_Reservas.Services.ReservaServiceCarpeta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

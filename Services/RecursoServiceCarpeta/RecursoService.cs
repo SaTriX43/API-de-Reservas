@@ -3,7 +3,7 @@ using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
 using API_de_Reservas.DTOs.RecursoDtoCarpeta;
 using API_de_Reservas.Models;
 
-namespace API_de_Reservas.Services
+namespace API_de_Reservas.Services.RecursoServiceCarpeta
 {
     public class RecursoService : IRecursoService
     {

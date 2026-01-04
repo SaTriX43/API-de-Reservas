@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace API_de_Reservas.Services
+namespace API_de_Reservas.Services.JwtServiceCarpeta
 {
     public class JwtService : IJwtService
     {

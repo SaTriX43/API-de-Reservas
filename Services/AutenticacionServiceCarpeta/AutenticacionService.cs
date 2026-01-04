@@ -4,8 +4,9 @@ using API_de_Reservas.DTOs.AutenticacionDtoCarpeta;
 using API_de_Reservas.DTOs.UsuarioDtoCarpeta;
 using API_de_Reservas.Models;
 using API_de_Reservas.Models.Enums;
+using API_de_Reservas.Services.JwtServiceCarpeta;
 
-namespace API_de_Reservas.Services
+namespace API_de_Reservas.Services.AutenticacionServiceCarpeta
 {
     public class AutenticacionService : IAutenticacionService
     {

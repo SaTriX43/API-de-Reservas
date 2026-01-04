@@ -6,7 +6,7 @@ using API_de_Reservas.Models;
 using API_de_Reservas.Models.Enums;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace API_de_Reservas.Services
+namespace API_de_Reservas.Services.ReservaServiceCarpeta
 {
     public class ReservasService : IReservasService
     {

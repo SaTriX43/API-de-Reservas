@@ -1,5 +1,5 @@
 ﻿using API_de_Reservas.DTOs.RecursoDtoCarpeta;
-using API_de_Reservas.Services;
+using API_de_Reservas.Services.RecursoServiceCarpeta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
