@@ -1,4 +1,5 @@
 ﻿using API_de_Reservas.DALs;
+using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
 using API_de_Reservas.DTOs.RecursoDtoCarpeta;
 using API_de_Reservas.Models;
 
@@ -7,17 +8,19 @@ namespace API_de_Reservas.Services
     public class RecursoService : IRecursoService
     {
         private readonly IRecursoRepository _recursoRepository;
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
 
-        public RecursoService(IRecursoRepository recursoRepository)
+        public RecursoService(IRecursoRepository recursoRepository, IUnidadDeTrabajo unidadDeTrabajo)
         {
             _recursoRepository = recursoRepository;
+            _unidadDeTrabajo = unidadDeTrabajo;
         }
 
 
         public async Task<Result<RecursoDto>> CrearRecurso(RecursoCrearDto recursoCrearDto)
         {
             var recursoNombreNormalizado = recursoCrearDto.Nombre.Trim().ToLower();
-            var recursoExisteNombre = await _recursoRepository.ObtenerRecursoPorNombre(recursoNombreNormalizado);
+            var recursoExisteNombre = await _recursoRepository.ObtenerRecursoPorNombreAsync(recursoNombreNormalizado);
 
             if(recursoExisteNombre != null)
             {
@@ -33,7 +36,9 @@ namespace API_de_Reservas.Services
                 FechaCreacion = DateTime.UtcNow
             };
 
-            var recursoCreado = await _recursoRepository.CrearRecurso(recursoModel);
+            var recursoCreado = _recursoRepository.CrearRecurso(recursoModel);
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             var recursoDto = new RecursoDto
             {

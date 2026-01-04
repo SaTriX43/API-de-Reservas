@@ -1,7 +1,7 @@
 ﻿using API_de_Reservas.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_de_Reservas.DALs
+namespace API_de_Reservas.DALs.UsuarioRepositoryCarpeta
 {
     public class UsuarioRepository : IUsuarioRepository
     {

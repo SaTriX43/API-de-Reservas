@@ -1,6 +1,6 @@
 ﻿using API_de_Reservas.Models;
 
-namespace API_de_Reservas.DALs
+namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
 {
     public interface IReservasRepository
     {

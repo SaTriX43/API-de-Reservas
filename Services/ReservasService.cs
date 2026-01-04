@@ -1,4 +1,6 @@
-﻿using API_de_Reservas.DALs;
+﻿using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
+using API_de_Reservas.DALs.ReservaRepositoryCarpeta;
+using API_de_Reservas.DALs.UsuarioRepositoryCarpeta;
 using API_de_Reservas.DTOs.ReservaDtoCarpeta;
 using API_de_Reservas.Models;
 using API_de_Reservas.Models.Enums;

@@ -1,5 +1,6 @@
 ﻿using API_de_Reservas.DTOs.RecursoDtoCarpeta;
 using API_de_Reservas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace API_de_Reservas.Controllers
             _recursoService = recursoService;
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("crear-recurso")]
         public async Task<IActionResult> CrearRecurso(RecursoCrearDto recursoCrearDto)
         {

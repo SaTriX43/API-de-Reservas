@@ -1,4 +1,5 @@
-﻿using API_de_Reservas.DALs;
+﻿using API_de_Reservas.DALs.AutenticacionRepositoryCarpeta;
+using API_de_Reservas.DALs.UsuarioRepositoryCarpeta;
 using API_de_Reservas.DTOs.AutenticacionDtoCarpeta;
 using API_de_Reservas.DTOs.UsuarioDtoCarpeta;
 using API_de_Reservas.Models;

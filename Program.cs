@@ -1,4 +1,8 @@
 using API_de_Reservas.DALs;
+using API_de_Reservas.DALs.AutenticacionRepositoryCarpeta;
+using API_de_Reservas.DALs.RecursoRepositoryCarpeta;
+using API_de_Reservas.DALs.ReservaRepositoryCarpeta;
+using API_de_Reservas.DALs.UsuarioRepositoryCarpeta;
 using API_de_Reservas.Middleware;
 using API_de_Reservas.Models;
 using API_de_Reservas.Services;
@@ -70,6 +74,8 @@ builder.Services.AddScoped<IRecursoRepository, RecursoRepository>();
 
 builder.Services.AddScoped<IReservasService, ReservasService>();
 builder.Services.AddScoped<IReservasRepository, ReservasRepository>();
+
+builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
 
 // =======================
 // APP

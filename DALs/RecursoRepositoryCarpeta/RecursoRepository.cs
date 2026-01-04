@@ -1,7 +1,7 @@
 ﻿using API_de_Reservas.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_de_Reservas.DALs
+namespace API_de_Reservas.DALs.RecursoRepositoryCarpeta
 {
     public class RecursoRepository : IRecursoRepository
     {
@@ -12,23 +12,22 @@ namespace API_de_Reservas.DALs
             _context = context;
         }
 
-        public async Task<Recurso?> ObtenerRecursoPorNombre(string nombreRecurso)
+        public async Task<Recurso?> ObtenerRecursoPorNombreAsync(string nombreRecurso)
         {
             var recursoEncontrado = await _context.Recursos.FirstOrDefaultAsync(r => r.Nombre ==  nombreRecurso);
             return recursoEncontrado;
         }
 
-        public async Task<Recurso?> ObtenerRecursoPorId(int recursoId)
+        public async Task<Recurso?> ObtenerRecursoPorIdAsync(int recursoId)
         {
             var recursoEncontrado = await _context.Recursos
                 .Include(r => r.Reservas)
                 .FirstOrDefaultAsync(r => r.Id == recursoId);
             return recursoEncontrado;
         }
-        public async Task<Recurso> CrearRecurso(Recurso recurso)
+        public Recurso CrearRecurso(Recurso recurso)
         {
             _context.Recursos.Add(recurso);
-            await _context.SaveChangesAsync();
             return recurso;
         }
     }

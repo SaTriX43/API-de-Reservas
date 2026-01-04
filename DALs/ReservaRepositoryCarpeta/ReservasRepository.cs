@@ -2,7 +2,7 @@
 using API_de_Reservas.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_de_Reservas.DALs
+namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
 {
     public class ReservasRepository : IReservasRepository
     {
