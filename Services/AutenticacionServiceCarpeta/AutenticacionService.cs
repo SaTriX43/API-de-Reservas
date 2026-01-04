@@ -1,4 +1,4 @@
-﻿using API_de_Reservas.DALs.AutenticacionRepositoryCarpeta;
+﻿using API_de_Reservas.DALs;
 using API_de_Reservas.DALs.UsuarioRepositoryCarpeta;
 using API_de_Reservas.DTOs.AutenticacionDtoCarpeta;
 using API_de_Reservas.DTOs.UsuarioDtoCarpeta;
@@ -10,19 +10,19 @@ namespace API_de_Reservas.Services.AutenticacionServiceCarpeta
 {
     public class AutenticacionService : IAutenticacionService
     {
-        private readonly IAutenticacionRepository _autenticacionRepository;
+        private readonly IUnidadDeTrabajo _unidadDeTrabajo;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _configuration;
 
         public AutenticacionService(
-            IAutenticacionRepository autenticacionRepository,
+            IUnidadDeTrabajo unidadDeTrabajo,
             IUsuarioRepository usuarioRepository,
             IJwtService jwtService,
             IConfiguration configuration
             )
         {
-            _autenticacionRepository = autenticacionRepository;
+            _unidadDeTrabajo = unidadDeTrabajo;
             _usuarioRepository = usuarioRepository;
             _jwtService = jwtService;
             _configuration = configuration;
@@ -48,7 +48,9 @@ namespace API_de_Reservas.Services.AutenticacionServiceCarpeta
                 Rol = UsuarioRol.User
             };
 
-            var usuarioCreado = await _autenticacionRepository.Registro(usuarioModel);
+            var usuarioCreado = _usuarioRepository.CrearUsuario(usuarioModel);
+
+            await _unidadDeTrabajo.GuardarCambiosAsync();
 
             var usuarioCreadoDto = new UsuarioDto
             {

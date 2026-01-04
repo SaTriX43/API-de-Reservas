@@ -22,5 +22,11 @@ namespace API_de_Reservas.DALs.UsuarioRepositoryCarpeta
             var usuarioEncontrado = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == usuarioId);
             return usuarioEncontrado;
         }
+
+        public Usuario CrearUsuario(Usuario usuario)
+        {
+            _context.Usuarios.Add(usuario);
+            return usuario;
+        }
     }
 }

@@ -66,7 +66,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAutenticacionService, AutenticacionService>();
-builder.Services.AddScoped<IAutenticacionRepository, AutenticacionRepository>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();

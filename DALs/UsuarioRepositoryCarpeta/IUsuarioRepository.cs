@@ -6,5 +6,6 @@ namespace API_de_Reservas.DALs.UsuarioRepositoryCarpeta
     {
         public Task<Usuario?> ObtenerUsuarioPorEmail(string email);
         public Task<Usuario?> ObtenerUsuarioPorId(int usuarioId);
+        public Usuario CrearUsuario(Usuario usuario);
     }
 }
