@@ -1,192 +1,119 @@
-﻿# API de Reservas (Citas / Turnos)
+﻿# 🏨 API de Reservas
 
-API REST desarrollada en **ASP.NET Core Web API (.NET 8)** para la gestión de reservas con validación de disponibilidad, control de acceso por roles y reglas de negocio reales.
-
-Este proyecto forma parte de un portafolio backend enfocado a roles **Backend .NET Trainee / Junior**.
+API REST desarrollada en **ASP.NET Core** para la gestión de reservas de recursos (habitaciones, citas, servicios, etc.), con autenticación JWT, roles, reglas de negocio reales y control de disponibilidad.
 
 ---
 
 ## 🎯 Objetivo del proyecto
 
-Implementar un sistema de reservas que permita:
+Simular un sistema de reservas real, aplicando:
+- reglas de negocio
+- seguridad por roles
+- ownership de recursos
+- validaciones de tiempo
+- filtros y paginación
 
-* Gestionar usuarios, recursos y reservas
-* Evitar solapamiento de horarios
-* Validar fechas pasadas
-* Aplicar autorización basada en roles y ownership
-* Mantener una arquitectura limpia y mantenible
-
----
-
-## 🧱 Arquitectura
-
-Arquitectura por capas:
-
-* **Controllers** → Exponen endpoints HTTP
-* **Services** → Reglas de negocio y validaciones
-* **Repositories (DALs)** → Acceso a datos (EF Core)
-* **DTOs** → Contratos de entrada y salida
-* **Models** → Entidades del dominio
-* **Middleware** → Manejo global de errores
-
----
-
-## 🛠️ Tecnologías utilizadas
-
-* .NET 8 – ASP.NET Core Web API
-* Entity Framework Core
-* SQL Server
-* JWT Authentication
-* BCrypt (hash de contraseñas)
-* Serilog (logging)
-* Swagger / OpenAPI
-
----
-
-## 🔐 Autenticación y Autorización
-
-* Autenticación mediante **JWT**
-* Claims incluidos:
-
-  * UserId
-  * Email
-  * Rol
-* Roles disponibles:
-
-  * **User**
-  * **Admin**
-
-### Reglas de acceso
-
-* Un **User**:
-
-  * Solo puede ver y cancelar sus propias reservas
-* Un **Admin**:
-
-  * Puede ver todas las reservas
-  * Puede cancelar cualquier reserva
-
----
-
-## 📦 Entidades principales
-
-### Usuario
-
-* Id
-* Nombre
-* Email
-* PasswordHash
-* Rol
-* FechaCreacion
-
-### Recurso
-
-* Id
-* Nombre
-* Descripción
-* Tipo (Enum)
-* Activo
-* FechaCreacion
-
-### Reserva
-
-* Id
-* UsuarioId
-* RecursoId
-* FechaInicio
-* FechaFinal
-* Estado (Activo, Cancelada, etc.)
-* FechaCreacion
-
----
-
-## 📋 Endpoints principales
-
-### Autenticación
-
-* `POST /api/autenticacion/registro`
-* `POST /api/autenticacion/login`
-
-### Recursos
-
-* `POST /api/recurso/crear-recurso`
-
-### Reservas
-
-* `POST /api/reservas/crear-reserva`
-* `PUT /api/reservas/cancelar-reserva/{reservaId}`
-* `GET /api/reservas/obtener-reservas-usuario/{usuarioId}`
-* `GET /api/reservas/obtener-reservas-recurso/{recursoId}` (solo Admin)
+Este proyecto forma parte de un roadmap de formación **Backend .NET** orientado a empleabilidad.
 
 ---
 
 ## 🧠 Reglas de negocio implementadas
 
-### Validaciones de fechas
-
-* No se permiten reservas en fechas pasadas
-* Fecha final no puede ser anterior a fecha inicio
-* Se aplica tolerancia de tiempo para evitar errores por latencia
-
-### Disponibilidad
-
-* No se permiten reservas si el recurso ya está ocupado
-* Se valida solapamiento de horarios
-* Reservas canceladas no bloquean horarios
+- ❌ No se permiten reservas en fechas pasadas
+- ❌ No se permiten reservas solapadas para un mismo recurso
+- ❌ Un usuario solo puede modificar sus propias reservas
+- ⏳ La cancelación está restringida según el tipo de recurso:
+  - Tecnológico → mínimo 24 horas antes
+  - Médico → mínimo 10 minutos antes
+  - Alimenticio → mínimo 3 días antes
+- 🛠️ El administrador puede cancelar reservas sin restricciones de tiempo
 
 ---
 
-## ⚠️ Manejo de errores
+## 🔐 Autenticación y Seguridad
 
-Middleware global de errores:
-
-* Captura excepciones no controladas
-* Retorna respuesta estándar JSON
-* Loguea errores con Serilog
-
----
-
-## ▶️ Cómo ejecutar el proyecto
-
-1. Clonar el repositorio
-2. Configurar la cadena de conexión en `appsettings.json`
-3. Ejecutar migraciones:
-
-```bash
-dotnet ef database update
-```
-
-4. Ejecutar el proyecto:
-
-```bash
-dotnet run
-```
-
-5. Acceder a Swagger:
-
-```
-https://localhost:{puerto}/swagger
-```
+- Autenticación mediante **JWT**
+- Roles soportados:
+  - `Admin`
+  - `User`
+- Protección de endpoints por rol
+- Ownership aplicado en todas las operaciones de usuario
 
 ---
 
-## 📌 Estado del proyecto
+## 🧱 Entidades principales
 
-✔ Funcional
-✔ Reglas de negocio completas
-✔ Autorización implementada
-✔ Arquitectura clara
+- Usuario
+- Recurso
+- Reserva
 
-Próximas mejoras:
+---
 
-* Refresh Tokens (rotación y revocación)
-* Paginación en listados
-* Tests unitarios
+## ⚙️ Funcionalidades
+
+### 👤 Usuario
+- Crear reserva
+- Cancelar reserva (con validaciones de tiempo)
+- Ver sus reservas
+
+### 🛠️ Administrador
+- Crear recursos
+- Ver todas las reservas
+- Filtrar reservas por:
+  - rango de fechas
+  - recurso
+- Paginación obligatoria en listados
+
+---
+
+## 🔍 Filtros y Paginación
+
+Los listados de reservas permiten:
+- paginación (`page`, `pageSize`)
+- filtrado por fecha (`fechaInicio`, `fechaFinal`)
+- ordenamiento por fecha de creación
+
+---
+
+## 🧩 Arquitectura
+
+El proyecto sigue una arquitectura en capas:
+
+- Controllers → manejo HTTP
+- Services → lógica de negocio
+- Repositories → acceso a datos
+- DTOs → contratos de entrada y salida
+- Unit of Work → control de persistencia
+
+Toda la lógica de negocio reside exclusivamente en los **Services**.
+
+---
+
+## 🛠️ Tecnologías usadas
+
+- ASP.NET Core
+- Entity Framework Core
+- SQL Server
+- JWT Authentication
+- C#
+- LINQ
+- TimeSpan / DateTime (reglas temporales)
+
+---
+
+## 📌 Notas finales
+
+Este proyecto prioriza:
+- claridad
+- mantenibilidad
+- reglas realistas
+- buenas prácticas backend
+
+No es un CRUD básico, sino un sistema con decisiones de negocio explícitas.
 
 ---
 
 ## 👨‍💻 Autor
 
-**Santiago González**
-Backend .NET Trainee / Junior
-Ecuador – LATAM
+Proyecto desarrollado por **Santiago**  
+Backend Developer .NET (en formación)
