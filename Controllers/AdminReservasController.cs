@@ -18,6 +18,33 @@ namespace API_de_Reservas.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTodasLasReservas(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] DateTime? fechaInicio = null,
+            [FromQuery] DateTime? fechaFinal = null
+            )
+        {
+            var reservas = await _reservaService.ObtenerTodasLasReservasAdminAsync(page,pageSize,fechaInicio,fechaFinal);
+
+            if (reservas.IsFailure)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = reservas.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                valor = reservas.Value
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPatch("cancelar-reserva/{reservaId}")]
         public async Task<IActionResult> CancelarReserva(int reservaId)
         {

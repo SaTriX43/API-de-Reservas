@@ -93,7 +93,7 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
 
             return Result<ReservaDto>.Success(reservaCreadaDto);
         }
-        public async Task<Result> CancelarReservaAsync(int reservaId, int usuarioId)
+        public async Task<Result> CancelarReservaUsuarioAsync(int reservaId, int usuarioId)
         {
             if(reservaId <= 0)
             {
@@ -217,12 +217,40 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
             var reservasPorRecurso = await _reservaRepository.ObtenerReservasPorRecursoAsync(recursoId);
 
             var reservasDto = reservasPorRecurso.Select(r => new ReservaDto { 
-                RecursoId=r.Id,
+                RecursoId=r.RecursoId,
                 Estado  =r.Estado,
                 FechaCreacion=r.FechaCreacion,
                 FechaFinal = r.FechaFinal,  
                 FechaInicio=r.FechaInicio,
                 Id =r.Id,
+                UsuarioId = r.UsuarioId
+            }).ToList();
+
+            return Result<List<ReservaDto>>.Success(reservasDto);
+        }
+        public async Task<Result<List<ReservaDto>>> ObtenerTodasLasReservasAdminAsync(int page, int pageSize, DateTime? fechaInicio, DateTime? fechaFinal)
+        {
+            if (page <= 0)
+                return Result<List<ReservaDto>>.Failure("La página debe ser mayor a 0");
+
+            if (pageSize <= 0 || pageSize > 50)
+                return Result<List<ReservaDto>>.Failure("pageSize inválido");
+
+            if (fechaFinal < fechaInicio)
+            {
+                return Result<List<ReservaDto>>.Failure("El rango de fechas es inválido");
+            }
+
+            var reservas = await _reservaRepository.ObtenerTodasLasReservasAsync(page,pageSize,fechaInicio,fechaFinal);
+
+            var reservasDto = reservas.Select(r => new ReservaDto
+            {
+                RecursoId = r.RecursoId,
+                Estado = r.Estado,
+                FechaCreacion = r.FechaCreacion,
+                FechaFinal = r.FechaFinal,
+                FechaInicio = r.FechaInicio,
+                Id = r.Id,
                 UsuarioId = r.UsuarioId
             }).ToList();
 

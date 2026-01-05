@@ -34,5 +34,27 @@ namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
             var reservasPorRecurso = await _context.Reservas.Where(r => r.RecursoId == recursoId).ToListAsync();
             return reservasPorRecurso;
         }
+
+        public async Task<List<Reserva>> ObtenerTodasLasReservasAsync(int page, int pageSize, DateTime? fechaInicio, DateTime? fechaFinal)
+        {
+            var query = _context.Reservas.AsQueryable();
+
+            if(fechaInicio.HasValue)
+            {
+               query =  query.Where(r => r.FechaCreacion >= fechaInicio);
+            }
+
+            if (fechaFinal.HasValue)
+            {
+               query =  query.Where(r => r.FechaCreacion <= fechaFinal);
+            }
+
+            query = query
+                .OrderByDescending(r => r.FechaCreacion)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+
+            return await query.ToListAsync();
+        }
     }
 }

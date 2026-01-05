@@ -16,5 +16,6 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
         public Task<Result> CancelarReservaAdminAsync(int reservaId);
         public Task<Result<List<ReservaDto>>> ObtenerReservasPorUsuarioIdAdminAsync(int usuarioId);
         public Task<Result<List<ReservaDto>>> ObtenerReservasPorRecursoAdminAsync(int recursoId);
+        public Task<Result<List<ReservaDto>>> ObtenerTodasLasReservasAdminAsync(int page, int pageSize, DateTime? fechaInicio, DateTime? fechaFinal);
     }
 }
