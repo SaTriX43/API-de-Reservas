@@ -118,6 +118,21 @@ namespace API_de_Reservas.Services.ReservaServiceCarpeta
                 return Result.Failure($"Su reserva con id = {reservaId} ya esta cancelada");
             }
 
+            var tiempoRestante = reservaExiste.FechaInicio - DateTime.UtcNow;
+
+            TimeSpan tiempoMinimo = reservaExiste.Recurso.Tipo switch
+            {
+                TipoRecurso.Tecnologico => TimeSpan.FromHours(24),
+                TipoRecurso.Medico => TimeSpan.FromMinutes(10),
+                TipoRecurso.Alimenticio => TimeSpan.FromDays(3),
+                _ => TimeSpan.Zero
+            };
+
+            if (tiempoRestante < tiempoMinimo)
+            {
+                return Result.Failure("No se pudo cancelar su reserva");
+            }
+
             reservaExiste.Estado = EstadoReserva.Cancelada;
 
             await _unidadDeTrabajo.GuardarCambiosAsync();

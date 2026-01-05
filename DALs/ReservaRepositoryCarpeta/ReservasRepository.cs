@@ -20,7 +20,9 @@ namespace API_de_Reservas.DALs.ReservaRepositoryCarpeta
 
         public async Task<Reserva?> ObtenerReservaPorIdAsync(int reservaId)
         {
-            var reservaEncontrada = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == reservaId);
+            var reservaEncontrada = await _context.Reservas
+                .Include(r => r.Recurso)
+                .FirstOrDefaultAsync(r => r.Id == reservaId);
             return reservaEncontrada;
         }
 
